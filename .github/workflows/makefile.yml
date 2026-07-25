@@ -35,20 +35,20 @@ jobs:
           name: Plugin ELF File
           path: CTRPluginFramework-BlankTemplate.elf
 
-      - name: Update latest tag
+      - name: Update git tag
         if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
         uses: richardsimko/update-tag@v1
         with:
-          tag_name: latest
+          tag_name: git
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Publish latest release
+      - name: Publish git release
         if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: latest
-          name: Latest Build
+          tag_name: git
+          name: Git
           prerelease: true
           make_latest: false
           files: |
