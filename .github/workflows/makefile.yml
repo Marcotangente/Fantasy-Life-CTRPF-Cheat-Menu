@@ -3,8 +3,6 @@ name: Makefile CI
 on:
   push:
     branches: [ master ]
-    tags:
-      - "v*"
   pull_request:
     branches: [ master ]
 
@@ -13,35 +11,47 @@ permissions:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     container:
       image: pablomk7/libctrpf:0.8.0
 
     steps:
-    - uses: actions/checkout@v2
+      - uses: actions/checkout@v2
 
-    - name: Build Plugin
-      run: make
+      - name: Build Plugin
+        run: make
 
-    - name: Upload Plugin
-      uses: actions/upload-artifact@v4
-      with:
-        name: Plugin 3GX File
-        path: CTRPluginFramework-BlankTemplate.3gx
+      - name: Upload Plugin
+        uses: actions/upload-artifact@v4
+        with:
+          name: Plugin 3GX File
+          path: CTRPluginFramework-BlankTemplate.3gx
 
-    - name: Upload Plugin ELF
-      uses: actions/upload-artifact@v4
-      with:
-        name: Plugin ELF File
-        path: CTRPluginFramework-BlankTemplate.elf
+      - name: Upload Plugin ELF
+        uses: actions/upload-artifact@v4
+        with:
+          name: Plugin ELF File
+          path: CTRPluginFramework-BlankTemplate.elf
 
-    - name: Publish Release
-      if: startsWith(github.ref, 'refs/tags/')
-      uses: softprops/action-gh-release@v2
-      with:
-        files: |
-          CTRPluginFramework-BlankTemplate.3gx
-          CTRPluginFramework-BlankTemplate.elf
-        generate_release_notes: true
+      - name: Update latest tag
+        if: github.event_name == 'push'
+        uses: richardsimko/update-tag@v1
+        with:
+          tag_name: latest
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Publish latest release
+        if: github.event_name == 'push'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: latest
+          name: Latest Build
+          prerelease: true
+          make_latest: false
+          files: |
+            CTRPluginFramework-BlankTemplate.3gx
+            CTRPluginFramework-BlankTemplate.elf
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
