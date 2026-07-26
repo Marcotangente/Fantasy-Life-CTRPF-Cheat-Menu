@@ -1,6 +1,7 @@
 #include <3ds.h>
 #include "csvc.h"
 #include <CTRPluginFramework.hpp>
+#include "cheats.hpp"
 
 #include <vector>
 
@@ -64,29 +65,6 @@ namespace CTRPluginFramework
     void OnProcessExit(void)
     {
         ToggleTouchscreenForceOn();
-    }
-
-    // Money editor
-    void MoneyEditor(MenuEntry *entry)
-    {
-        u32 money;
-
-        // Read current value
-        Process::Read32(0x08A47BE8, money);
-
-        Keyboard kb("Money");
-        kb.IsHexadecimal(true);
-
-        if (kb.Open(money) != 0)
-            return;
-
-        // Write new value
-        Process::Write32(0x08A47BE8, money);
-    }
-
-    void InitMenu(PluginMenu &menu)
-    {
-        menu += new MenuEntry("Money", MoneyEditor);
     }
 
     int main(void)
