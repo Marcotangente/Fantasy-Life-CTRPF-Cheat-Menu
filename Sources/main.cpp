@@ -69,7 +69,7 @@ namespace CTRPluginFramework
 
     int main(void)
     {
-        PluginMenu *menu = new PluginMenu(
+        PluginMenu menu = new PluginMenu(
             "Action Replay",
             0,
             8,
@@ -81,7 +81,7 @@ namespace CTRPluginFramework
         menu->SynchronizeWithFrame(true);
 
         // Add menu entries
-        InitMenu(*menu);
+        InitMenu(menu);
 
         // Run the plugin
         menu->Run();

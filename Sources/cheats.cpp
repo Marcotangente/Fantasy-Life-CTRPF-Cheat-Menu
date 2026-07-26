@@ -2,23 +2,20 @@
 
 namespace CTRPluginFramework
 {
-    void MoneyEditor(MenuEntry *entry)
+    void Money(MenuEntry *entry)
     {
-        u32 money;
-
-        Process::Read32(0x08A47BE8, money);
+        u32 money = 0;
 
         Keyboard kb("Money");
-        kb.IsHexadecimal(true);
+        kb.IsHexadecimal(false);
+        kb.SetSlider(0, 99999999, 100);
 
-        if (kb.Open(money) != 0)
-            return;
-
-        Process::Write32(0x08A47BE8, money);
+        if (kb.Open(money) >= 0)
+            Process::Write32(0x08A47BE8, money);
     }
 
-    void InitMenu(PluginMenu &menu)
+    void InitMenu(PluginMenu *menu)
     {
-        menu += new MenuEntry("Money", MoneyEditor);
+        menu->Append(new MenuEntry("Money", Money));
     }
 }
