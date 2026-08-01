@@ -2,7 +2,7 @@
 
 A cheat menu for **Fantasy Life (EUR Version)** on the Nintendo 3DS, powered by [CTRPluginFramework](https://github.com/Nanquitas/CTRPluginFramework) and designed for [Luma3DS](https://github.com/LumaTeam/Luma3DS). (It can also be used with emulators like [Azahar](https://azahar-emu.org/) and [Lime3ds](https://lime3ds.net/)).
 
-> **Note / Disclaimer:** This project serves as a **Proof of Concept (PoC)** reverse-engineering effort. Since I was personally disappointed by *Fantasy Life i*, keeping the original 3DS masterpiece alive through mods and deeper technical analysis is my way of preserving it—with the ultimate hope of seeing an unofficial PC port happen one day, a project I would gladly contribute to!
+> This project serves as a **Proof of Concept** reverse-engineering effort. Since I was personally disappointed by Fantasy Life i, keeping the original 3DS masterpiece alive through mods and deeper technical analysis is my way of preserving it, with the ultimate hope of seeing an unofficial PC port happen one day, a project I would gladly contribute to!
 
 ## Warning
 This plugin is built strictly for the **EUR version** of Fantasy Life and will not work on other region versions due to differing memory offsets.
@@ -10,6 +10,7 @@ This plugin is built strictly for the **EUR version** of Fantasy Life and will n
 ## Features
 * **One Hit KO** (99999 damage dealt to enemies)
 * **God Mode** (Player takes 0 damage)
+* **Infinite SP** (All SP consumption is set to 0)
 * Built-in framework tools: Memory Searcher, Hex Editor, Action Replay Engine, and more.
 
 ## Installation
@@ -39,29 +40,63 @@ void ApplyRawDamage(float damage,CombatStats *target_stats)
 ```
 * **`SetClampedHP`** (`0x001f50d0`)
 ```c
-int SetClampedHP(float requested_new_hp,int entity_ptr)
-
+int SetClampedHP(float requested_new_hp,CombatStats *stats)
 {
   float previous_hp;
   float max_hp;
   float maybe_hp_modifier;
   float final_new_hp;
   
-  previous_hp = *(float *)(entity_ptr + 0x80);
+  previous_hp = stats->HP;
   final_new_hp = 0.0;
-  if (*(int *)(entity_ptr + 0x90) == 0) {
-    max_hp = (float)FUN_001dbe94(entity_ptr + 8);
+  if (*(int *)&stats->field_0x90 == 0) {
+    max_hp = (float)FUN_001dbe94(&stats->field_0x8);
   }
   else {
-    max_hp = (float)FUN_001dbe94(entity_ptr + 8);
-    some_hp_modifier = (float)FUN_001e3ffc(*(undefined4 *)(entity_ptr + 0x90),10);
-    max_hp = max_hp + some_hp_modifier;
+    max_hp = (float)FUN_001dbe94(&stats->field_0x8);
+    maybe_hp_modifier = (float)FUN_001e3ffc(*(undefined4 *)&stats->field_0x90,10);
+    max_hp = max_hp + maybe_hp_modifier;
   }
   if ((0.0 <= requested_new_hp) && (final_new_hp = max_hp, requested_new_hp <= max_hp)) {
     final_new_hp = requested_new_hp;
   }
-  *(float *)(entity_ptr + 0x80) = final_new_hp;
+  stats->HP = final_new_hp;
   return (int)final_new_hp - (int)previous_hp;
+}
+```
+* **`ApplySPCost`** (`0x002ffce0`)
+The function that I hooked to make the infinite SP cheat.
+```c
+int ApplySPCost(float cost,CombatStats *stats)
+{
+  int iVar1;
+  
+  iVar1 = FUN_001fb498(&stats->owner->field_0xda8,0);
+  if (((iVar1 == 0) || (iVar1 = FUN_0020b67c(stats->owner,0x24), iVar1 == 0)) &&
+     (iVar1 = FUN_0020b67c(stats->owner,0x3a), iVar1 == 0)) {
+    iVar1 = SetClampedSP(stats->SP - cost,stats);
+    return iVar1;
+  }
+  return 0;
+}
+```
+* **`SetClampedSP`** (`0x00205360`)
+```c
+int SetClampedSP(float requested_new_sp,CombatStats *stats_ptr)
+
+{
+  float previous_sp;
+  float max_sp;
+  float final_new_sp;
+  
+  previous_sp = stats_ptr->SP;
+  final_new_sp = 0.0;
+  max_sp = (float)FUN_001b2968(&stats_ptr->field_0x8);
+  if ((0.0 <= requested_new_sp) && (final_new_sp = max_sp, requested_new_sp <= max_sp)) {
+    final_new_sp = requested_new_sp;
+  }
+  stats_ptr->SP = final_new_sp;
+  return (int)final_new_sp - (int)previous_sp;
 }
 ```
 
@@ -76,8 +111,8 @@ int SetClampedHP(float requested_new_hp,int entity_ptr)
 
 #### `CombatStats`
 * **Size** `0x98` (I'm not sure about this, and there are subclasses of this class.)
-Passed as the second argument (`target_stats_ptr`) to `ApplyRawDamage`.
 * **HP Offset:** `+ 0x80` the HP value, stored as a float.
+* **SP Offset:** `+ 0x84` the SP value, stored as a float.
 
 ---
 

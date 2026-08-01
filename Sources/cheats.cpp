@@ -3,11 +3,13 @@
 namespace CTRPluginFramework
 {
     Hook g_damageHook;
+    Hook g_SPHook;
 
     bool g_isOhkoEnabled = false;
     bool g_isGodModeEnabled = false;
+    bool g_isInfiniteSPEnabled = false;
 
-    void ApplyRawDamageHandler(float damage, u32 target_stats_ptr)
+    void Hook_ApplyRawDamage(float damage, u32 target_stats_ptr)
     {
         if (target_stats_ptr != 0)
         {
@@ -26,6 +28,12 @@ namespace CTRPluginFramework
         ctx.OriginalFunction<void>(damage, target_stats_ptr);
     }
 
+    int Hook_ApplySPCost(float cost, u32 stats_ptr) {
+        auto& ctx = HookContext::GetCurrent();
+        cost = 0.0f;
+        return ctx.OriginalFunction<int>(cost, stats_ptr);
+    }
+
     void ToggleDamageCheat(MenuEntry *entry)
     {
         g_isOhkoEnabled = entry->IsActivated();
@@ -34,8 +42,7 @@ namespace CTRPluginFramework
         {
             if (!g_damageHook.IsEnabled())
             {
-                u32 applyRawDamage_Address = 0x001cc7f0; 
-                g_damageHook.InitializeForMitm(applyRawDamage_Address, (u32)ApplyRawDamageHandler);
+                g_damageHook.InitializeForMitm(0x001cc7f0, (u32)Hook_ApplyRawDamage);
                 g_damageHook.Enable();
             }
             OSD::Notify("One Hit KO enabled.");
@@ -56,7 +63,7 @@ namespace CTRPluginFramework
         {
             if (!g_damageHook.IsEnabled())
             {
-                g_damageHook.InitializeForMitm(0x001cc7f0, (u32)ApplyRawDamageHandler);
+                g_damageHook.InitializeForMitm(0x001cc7f0, (u32)Hook_ApplyRawDamage);
                 g_damageHook.Enable();
             }
             OSD::Notify("God Mode enabled.");
@@ -69,9 +76,28 @@ namespace CTRPluginFramework
         }
     }
 
+    void ToggleInfiniteSPCheat(MenuEntry *entry)
+    {
+        if (entry->WasJustActivated())
+        {
+            if (!g_SPHook.IsEnabled())
+            {
+                g_SPHook.InitializeForMitm(0x002ffce0, (u32)Hook_ApplySPCost);
+                g_SPHook.Enable();
+            }
+            OSD::Notify("Infinite SP enabled.");
+        }
+        else if (!entry->IsActivated())
+        {
+            OSD::Notify("Infinite SP disabled.");
+            g_SPHook.Disable();
+        }
+    }
+
     void InitMenu(PluginMenu *menu)
     {
         menu->Append(new MenuEntry("One Hit KO (99999 Damage)", ToggleDamageCheat));
         menu->Append(new MenuEntry("God Mode", ToggleGodModeCheat));
+        menu->Append(new MenuEntry("Infinite SP (No SP consumption)", ToggleInfiniteSPCheat));
     }
 }
