@@ -18,7 +18,7 @@ jobs:
       image: pablomk7/libctrpf:0.8.0
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
       - name: Build Plugin
         run: make
@@ -27,13 +27,13 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: Plugin 3GX File
-          path: CTRPluginFramework-BlankTemplate.3gx
+          path: *.3gx
 
       - name: Upload Plugin ELF
         uses: actions/upload-artifact@v4
         with:
           name: Plugin ELF File
-          path: CTRPluginFramework-BlankTemplate.elf
+          path: *.elf
 
       - name: Update git tag
         if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
@@ -52,7 +52,7 @@ jobs:
           prerelease: true
           make_latest: false
           files: |
-            CTRPluginFramework-BlankTemplate.3gx
-            CTRPluginFramework-BlankTemplate.elf
+            *.3gx
+            *-BlankTemplate.elf
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
