@@ -27,13 +27,13 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: Plugin 3GX File
-          path: *.3gx
+          path: Fantasy-Life-CTRPF-Cheat-Menu.3gx
 
       - name: Upload Plugin ELF
         uses: actions/upload-artifact@v4
         with:
           name: Plugin ELF File
-          path: *.elf
+          path: Fantasy-Life-CTRPF-Cheat-Menu.elf
 
       - name: Update git tag
         if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
@@ -52,7 +52,7 @@ jobs:
           prerelease: true
           make_latest: false
           files: |
-            *.3gx
-            *-BlankTemplate.elf
+            Fantasy-Life-CTRPF-Cheat-Menu.3gx
+            Fantasy-Life-CTRPF-Cheat-Menu.elf
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
