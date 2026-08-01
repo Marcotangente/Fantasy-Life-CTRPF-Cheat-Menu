@@ -45,7 +45,7 @@ namespace CTRPluginFramework
         if (found != nullptr)
         {
             original = found[13];
-            patchAddress = (u32 *)PA_FROM_VA(found + 13);
+            patchAddress = (u32 *)PA_FROM_VA(reinterpret_cast<u32>(found + 13));
             found[13] = 0xE1A00000;
         }
 
