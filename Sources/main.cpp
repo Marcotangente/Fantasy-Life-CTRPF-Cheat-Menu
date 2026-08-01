@@ -69,12 +69,12 @@ namespace CTRPluginFramework
 
     int main(void)
     {
-        PluginMenu menu = new PluginMenu(
-            "Action Replay",
+        PluginMenu *menu = new PluginMenu(
+            "Fantasy Life Cheat Menu",
             0,
             8,
             0,
-            "A blank template plugin.\nGives you access to the ActionReplay and others tools."
+            "Fantasy Life Cheat Menu\nby Marcotangente\n\nHave fun !"
         );
 
         // Synchronize the menu with frame events
