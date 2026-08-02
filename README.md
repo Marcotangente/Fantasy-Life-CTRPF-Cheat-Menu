@@ -4,6 +4,8 @@ A cheat menu for **Fantasy Life (EUR Version)** on the Nintendo 3DS, powered by 
 
 > This project serves as a **Proof of Concept** reverse-engineering effort. Since I was personally disappointed by Fantasy Life i, keeping the original 3DS masterpiece alive through mods and deeper technical analysis is my way of preserving it, with the ultimate hope of seeing an unofficial PC port happen one day, a project I would gladly contribute to!
 
+![Preview](Assets/screenshot.png)
+
 ## Warning
 This plugin is built strictly for the **EUR version** of Fantasy Life and will not work on other region versions due to differing memory offsets.
 
