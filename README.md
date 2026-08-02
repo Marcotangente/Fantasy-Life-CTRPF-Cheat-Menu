@@ -16,8 +16,9 @@ This plugin is built strictly for the **EUR version** of Fantasy Life and will n
 ## Installation
 1. Download the latest `.3gx` file from the [Releases](../../releases).
 2. Place the file into your SD card under `luma/plugins/0004000000113100/`.
-3. Launch the game and press **Select** to open/close the cheat menu.
-4. Press `A` to select/deselect a cheat.
+3. If you use an emulator, make sur that 3GX plugin loader is enabled.
+4. Launch the game and press **Select** to open/close the cheat menu.
+5. Press `A` to select/deselect a cheat.
 
 ---
 
